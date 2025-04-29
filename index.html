@@ -1,0 +1,68 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lenderville - Get Your Refinance Quote</title>
+  <style>
+    body { font-family: Arial, sans-serif; background-color: #f5f7fa; padding: 20px; }
+    .container { max-width: 400px; margin: auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0px 0px 10px rgba(0,0,0,0.1); }
+    input, select, button { width: 100%; margin-top: 10px; padding: 12px; border: 1px solid #ccc; border-radius: 5px; }
+    button { background-color: #2e7d32; color: white; border: none; font-size: 16px; }
+    .result { margin-top: 20px; background: #e0ffe0; padding: 20px; border-radius: 5px; display: none; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <img src="logo.png" alt="Lenderville Logo" style="max-width: 100%; height: auto; margin-bottom: 20px;">
+  <h2>Lenderville Refinance Quote</h2>
+  <form id="quoteForm">
+    <input type="text" id="full_name" placeholder="Full Name" required>
+    <input type="text" id="address" placeholder="Address" required>
+    <input type="text" id="last4_ssn" placeholder="Last 4 of SSN" required>
+    <select id="loan_type" required>
+      <option value="">Select Loan Type</option>
+      <option value="Mortgage">Mortgage</option>
+      <option value="Auto">Auto Loan</option>
+    </select>
+    <button type="submit">Check Refinance Options</button>
+  </form>
+
+  <div class="result" id="resultBox">
+    <h3 id="greeting"></h3>
+    <p><strong>Current Loan:</strong> <span id="currentRate"></span>% at $<span id="currentPayment"></span>/mo</p>
+    <p><strong>New Loan:</strong> 4.5% at $<span id="newPayment"></span>/mo</p>
+    <p><strong>Monthly Savings:</strong> $<span id="monthlySavings"></span></p>
+    <p><strong>Total Estimated Savings:</strong> $<span id="totalSavings"></span></p>
+  </div>
+</div>
+
+<script>
+document.getElementById('quoteForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const full_name = document.getElementById('full_name').value;
+    const address = document.getElementById('address').value;
+    const last4_ssn = document.getElementById('last4_ssn').value;
+    const loan_type = document.getElementById('loan_type').value;
+
+    const response = await fetch('http://127.0.0.1:8000/get-quote', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ full_name, address, last4_ssn, loan_type }),
+    });
+
+    const data = await response.json();
+    document.getElementById('resultBox').style.display = 'block';
+    document.getElementById('greeting').textContent = data.message;
+    document.getElementById('currentRate').textContent = data.current_rate;
+    document.getElementById('currentPayment').textContent = data.current_payment;
+    document.getElementById('newPayment').textContent = data.new_payment;
+    document.getElementById('monthlySavings').textContent = data.monthly_savings;
+    document.getElementById('totalSavings').textContent = data.total_savings_estimate;
+});
+</script>
+
+</body>
+</html>
